@@ -31,6 +31,7 @@ Files
 - `soft-fail.sh`: A script that exits non-zero to simulate an expected failure
   without stopping the pipeline.
 - `pipeline.yaml`: Minimal Harness CI pipeline example for running the demo.
+- `react-demo/`: Minimal React component test using Vitest and Testing Library.
 
 How to Use
 ----------
@@ -66,6 +67,7 @@ Expected Behavior
 - Failure run: the selected step fails and the script exits non-zero.
 - Soft failure step: the script exits non-zero but the pipeline continues.
 - Summary artifact: `artifacts/demo-summary.json` is created in the workspace.
+- React test step: runs a component test suite with Vitest.
 
 Failure-Mode Matrix
 -------------------

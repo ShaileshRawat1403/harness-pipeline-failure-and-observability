@@ -39,6 +39,18 @@ pipeline:
                       ./harness-ci-observability-demo/build.sh
               - step:
                   type: Run
+                  name: React Component Tests
+                  identifier: react_component_tests
+                  spec:
+                    connectorRef: account.dockerhub_public
+                    image: node:20-alpine
+                    shell: Sh
+                    command: |
+                      cd harness-ci-observability-demo/react-demo
+                      npm install
+                      npm run test
+              - step:
+                  type: Run
                   name: Soft Failure Expected
                   identifier: soft_failure_expected
                   spec:
