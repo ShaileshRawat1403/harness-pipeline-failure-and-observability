@@ -68,6 +68,7 @@ Expected Behavior
 - Soft failure step: the script exits non-zero but the pipeline continues.
 - Summary artifact: `artifacts/demo-summary.json` is created in the workspace.
 - React test step: runs a component test suite with Vitest.
+- S3 upload step: uploads `artifacts/` when runtime inputs are provided.
 
 Failure-Mode Matrix
 -------------------

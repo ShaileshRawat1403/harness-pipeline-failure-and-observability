@@ -47,6 +47,7 @@ pipeline:
                     shell: Sh
                     command: |
                       cd harness-ci-observability-demo/react-demo
+                      mkdir -p ../artifacts
                       npm install
                       npm run test
               - step:
@@ -70,6 +71,16 @@ pipeline:
                     shell: Sh
                     command: |
                       cat artifacts/demo-summary.json
+              - step:
+                  type: S3Upload
+                  name: Upload Artifacts to S3
+                  identifier: upload_artifacts_s3
+                  spec:
+                    connectorRef: <+input>
+                    bucket: <+input>
+                    region: <+input>
+                    sourcePath: artifacts
+                    targetFolder: harness-ci-observability-demo/<+pipeline.executionId>
         failureStrategies:
           - onFailure:
               errors:
