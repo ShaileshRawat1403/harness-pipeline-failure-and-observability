@@ -1,0 +1,46 @@
+pipeline:
+  name: Harness CI Observability Demo
+  identifier: harness_ci_observability_demo
+  projectIdentifier: YOUR_PROJECT_ID
+  orgIdentifier: YOUR_ORG_ID
+  stages:
+    - stage:
+        name: Demo
+        identifier: demo
+        type: CI
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Run Demo Script
+                  identifier: run_demo_script
+                  spec:
+                    shell: Bash
+                    command: |
+                      chmod +x harness-ci-observability-demo/build.sh
+                      ./harness-ci-observability-demo/build.sh
+              - step:
+                  type: Run
+                  name: Soft Failure (Expected)
+                  identifier: soft_failure_expected
+                  spec:
+                    shell: Bash
+                    command: |
+                      chmod +x harness-ci-observability-demo/soft-fail.sh
+                      ./harness-ci-observability-demo/soft-fail.sh || true
+              - step:
+                  type: Run
+                  name: Show Summary Artifact
+                  identifier: show_summary_artifact
+                  spec:
+                    shell: Bash
+                    command: |
+                      cat artifacts/demo-summary.json
+              - step:
+                  type: UploadArtifacts
+                  name: Upload Summary Artifact
+                  identifier: upload_summary_artifact
+                  spec:
+                    paths:
+                      - artifacts/demo-summary.json
