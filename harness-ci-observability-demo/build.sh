@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 
 DEMO_FAIL_STEP="${DEMO_FAIL_STEP:-}"
 DEMO_SLEEP_SEC="${DEMO_SLEEP_SEC:-2}"
