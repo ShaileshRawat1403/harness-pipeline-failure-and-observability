@@ -33,7 +33,7 @@ pipeline:
                   spec:
                     connectorRef: account.dockerhub_public
                     image: alpine:3.19
-                    shell: Bash
+                    shell: Sh
                     command: |
                       chmod +x harness-ci-observability-demo/build.sh
                       ./harness-ci-observability-demo/build.sh
@@ -44,7 +44,7 @@ pipeline:
                   spec:
                     connectorRef: account.dockerhub_public
                     image: alpine:3.19
-                    shell: Bash
+                    shell: Sh
                     command: |
                       chmod +x harness-ci-observability-demo/soft-fail.sh
                       ./harness-ci-observability-demo/soft-fail.sh || true
@@ -55,7 +55,7 @@ pipeline:
                   spec:
                     connectorRef: account.dockerhub_public
                     image: alpine:3.19
-                    shell: Bash
+                    shell: Sh
                     command: |
                       cat artifacts/demo-summary.json
         failureStrategies:
