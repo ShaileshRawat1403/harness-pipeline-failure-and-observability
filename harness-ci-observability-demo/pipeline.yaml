@@ -1,14 +1,29 @@
 pipeline:
   name: Harness CI Observability Demo
   identifier: harness_ci_observability_demo
-  projectIdentifier: YOUR_PROJECT_ID
-  orgIdentifier: YOUR_ORG_ID
+  projectIdentifier: demopipelineobservability
+  orgIdentifier: default
+  properties:
+    ci:
+      codebase:
+        connectorRef: account.githubpublicrepos
+        repoName: harness-pipeline-failure-and-observability
+        build:
+          type: branch
+          spec:
+            branch: main
   stages:
     - stage:
         name: Demo
         identifier: demo
         type: CI
         spec:
+          cloneCodebase: true
+          infrastructure:
+            type: KubernetesDirect
+            spec:
+              connectorRef: account.k8s_docker_desktop
+              namespace: harness-delegate-ng
           execution:
             steps:
               - step:
@@ -16,15 +31,19 @@ pipeline:
                   name: Run Demo Script
                   identifier: run_demo_script
                   spec:
+                    connectorRef: harnessImage
+                    image: alpine:3.19
                     shell: Bash
                     command: |
                       chmod +x harness-ci-observability-demo/build.sh
                       ./harness-ci-observability-demo/build.sh
               - step:
                   type: Run
-                  name: Soft Failure (Expected)
+                  name: Soft Failure Expected
                   identifier: soft_failure_expected
                   spec:
+                    connectorRef: harnessImage
+                    image: alpine:3.19
                     shell: Bash
                     command: |
                       chmod +x harness-ci-observability-demo/soft-fail.sh
@@ -34,13 +53,14 @@ pipeline:
                   name: Show Summary Artifact
                   identifier: show_summary_artifact
                   spec:
+                    connectorRef: harnessImage
+                    image: alpine:3.19
                     shell: Bash
                     command: |
                       cat artifacts/demo-summary.json
-              - step:
-                  type: UploadArtifacts
-                  name: Upload Summary Artifact
-                  identifier: upload_summary_artifact
-                  spec:
-                    paths:
-                      - artifacts/demo-summary.json
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: MarkAsFailure
