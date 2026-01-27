@@ -1,78 +1,94 @@
-# harness-pipeline-failure-and-observability
-Open-source enablement documentation for Harness users, focused on understanding pipeline failures, observability, and AI-assisted insights in real production environments.
-Harness Pipeline Failure & Observability Guide
-=============================================
+# Harness CD with GHCR on Local Kubernetes
 
-Open-source enablement documentation for teams using Harness, focused on
-understanding pipeline failures, observability, and AI-assisted insights in real
-production environments.
+### Artifact-Centric Deployment Guide
 
-Why This Repository Exists
---------------------------
+---
 
-Harness provides significantly richer visibility than traditional CI/CD tools:
-pipeline execution graphs, parent-child pipeline relationships, dashboards, and
-AI-assisted insights.
+## 📖 Overview
 
-However, many teams face a common gap:
+This repository contains the practical, end-to-end guide for deploying containerized applications to a local Kubernetes cluster using **Harness Continuous Delivery** and **GitHub Container Registry (GHCR)**.
 
-- They can see more signals, but are unsure how to interpret them, especially
-  during failures and incidents.
+The focus of this guide is resolving the "integration gaps" where authentication fails, artifacts aren't visible, or manifests render empty.
 
-As a result:
+---
 
-- Pipeline failures are still treated as binary events.
-- Logs are overused while higher-level signals are ignored.
-- AI insights are either blindly trusted or completely dismissed.
-- Mean Time to Resolution (MTTR) does not improve as expected.
+## 🏗 Architecture & Workflow
 
-This repository exists to close that gap.
+### The Delivery Contract
 
-What This Documentation Focuses On
-----------------------------------
+In a robust CI/CD system, the handoff between CI and CD is an immutable contract. CI produces the artifact (Docker Image); CD ensures that exact version is deployed.
 
-This is not a replacement for official Harness documentation.
+### Deployment Logic
 
-Instead, it focuses on areas vendor docs often under-explain:
+The following diagram illustrates how Harness connects your GitHub source, GHCR registry, and Local Cluster.
 
-- How to think about pipeline failures, not just view them.
-- How parent and child pipelines influence each other.
-- How to interpret dashboards and anomaly signals.
-- What Harness AI is suggesting versus what humans must decide.
-- How to triage failures systematically under pressure.
+```mermaid
+graph LR
+    A[GitHub Repo] -- Manifests --> B(Harness Service)
+    C[GHCR Registry] -- Artifact Metadata --> B
+    B --> D{Harness Pipeline}
+    D --> E[Local K8s Cluster]
+    subgraph "Local Environment"
+    F[Harness Delegate] -- Executes --> E
+    end
 
-The emphasis is on decision-making, not configuration walkthroughs.
+```
 
-Who This Is For
---------------
+---
 
-Primary audience:
+## 🚀 Step-by-Step Implementation
 
-- DevOps and Platform teams operating Harness in production.
+### 1. Registry Connection
 
-Secondary audience:
+You must authenticate Harness with GHCR using a GitHub Personal Access Token (PAT) with `read:packages` scope.
 
-- Engineers who interact with pipelines, deployments, and releases.
+* **Registry URL:** `https://ghcr.io`
+* **Authentication:** GitHub Username + PAT (Secret)
+* **Connectivity:** Must route through the local **Harness Delegate**.
 
-Tertiary audience:
+### 2. Service & Artifact Definition
 
-- Technical leadership concerned with reliability, auditability, and MTTR.
+The Service links your YAML to your Image. **Critical:** Do not hardcode tags in your manifests. Use the Harness variable expression:
 
-This repository is written so one set of docs can serve all three audiences
-without duplication.
+> `image: <+artifact.image>`
 
-What This Repository Is Not
----------------------------
+### 3. Pipeline Configuration
 
-To set expectations clearly:
+Configure your pipeline to use **Runtime Input** for the artifact tag. This allows you to select specific versions from the GHCR registry at execution time.
 
-- Not a feature catalog.
-- Not a marketing overview.
-- Not a step-by-step UI tutorial.
-- Not tied to any single organization or environment.
+| Step | Action | Outcome |
+| --- | --- | --- |
+| **Pick Tag** | Select from GHCR list | Immutable deployment |
+| **Fetch Manifest** | Pull from GitHub path | Clean YAML resolution |
+| **Apply** | `kubectl apply` via Delegate | Running Pods |
 
-All examples and screenshots are either:
+---
 
-- From demo or sandbox environments.
-- Sanitized and redacted.
-- Clearly marked as illustrative.
+## 🛠 Troubleshooting Common Gaps
+
+### "No objects passed to apply"
+
+* **Cause:** The folder path in the Harness Service Manifest configuration does not match the GitHub repository structure exactly.
+* **Fix:** Ensure the path points to the directory containing your `.yaml` files, not the files themselves.
+
+### "Failed to fetch artifacts"
+
+* **Cause:** Harness cannot resolve the image path.
+* **Fix:** In the Artifact Source settings, ensure the **Image Path** does *not* include the registry prefix (e.g., use `username/image`, not `ghcr.io/username/image`).
+
+---
+
+## 📝 Core Deployment Principles
+
+1. **Immutability:** Always deploy by Digest or specific Tag, never use `latest`.
+2. **Locality:** Always validate manifests locally using `kubectl apply --dry-run=client` before pushing to Git.
+3. **Strict Contracts:** CD should never "guess" what to deploy; the artifact must be explicitly defined in the Service.
+
+---
+
+## 👥 Maintainers
+
+* **Owner:** Shailesh Rawat
+* **Last Reviewed:** 2026-01-22
+
+---
