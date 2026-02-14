@@ -22,13 +22,13 @@ The primary objective is to eliminate integration friction by establishing a str
 
 ## Technical Architecture
 
-### Deployment Logic Flow
+## Technical Architecture
 
-The following diagram outlines the handoff between the artifact registry and the deployment orchestrator.
+### Deployment Logic Flow
 
 ```mermaid
 graph TD
-    subgraph Source Control & Registry
+    subgraph "Source Control & Registry"
     A[GitHub Repository] -- Manifests/YAML --> H(Harness CD)
     G[GHCR Registry] -- Image Metadata/Digest --> H
     end
@@ -38,10 +38,11 @@ graph TD
     S --> P[Deployment Pipeline]
     end
 
-    subgraph Local Infrastructure
+    subgraph "Local Infrastructure"
     P --> D[Harness Delegate]
     D --> K[Local Kubernetes Cluster]
     end
+
 
 ```
 
