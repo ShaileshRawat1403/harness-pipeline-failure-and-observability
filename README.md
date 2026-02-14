@@ -22,8 +22,6 @@ The primary objective is to eliminate integration friction by establishing a str
 
 ## Technical Architecture
 
-## Technical Architecture
-
 ### Deployment Logic Flow
 
 ```mermaid
@@ -43,6 +41,7 @@ graph TD
     D --> K[Local Kubernetes Cluster]
     end
 
+```
 
 ---
 
