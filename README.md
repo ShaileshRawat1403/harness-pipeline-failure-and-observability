@@ -44,8 +44,6 @@ graph TD
     end
 
 
-```
-
 ---
 
 ## Prerequisites
