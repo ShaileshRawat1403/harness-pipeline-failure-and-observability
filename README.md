@@ -27,11 +27,11 @@ The primary objective is to eliminate integration friction by establishing a str
 ```mermaid
 graph TD
     subgraph "Source Control & Registry"
-    A[GitHub Repository] -- Manifests/YAML --> H(Harness CD)
-    G[GHCR Registry] -- Image Metadata/Digest --> H
+    A[GitHub Repository] -- "Manifests/YAML" --> H(Harness CD)
+    G[GHCR Registry] -- "Image Metadata/Digest" --> H
     end
 
-    subgraph Orchestration
+    subgraph "Orchestration"
     H --> S[Service Definition]
     S --> P[Deployment Pipeline]
     end
